@@ -293,7 +293,16 @@ public class PieChart extends PieRadarChartBase<PieData> {
                     if (!needsHighlight(e.getXIndex(), i)) {
 
                         mRenderPaint.setColor(dataSet.getColor(j));
-                        mDrawCanvas.drawArc(mCircleBox, angle + sliceSpace / 2f, newangle * mPhaseY
+
+                        // get whole the radius
+                        float r = getRadius();
+
+                        float off = (r - (r / 100f * mHoleRadiusPercent)) / 2f;
+                        RectF oval = new RectF(mCircleBox.left + off, mCircleBox.top + off,
+                                mCircleBox.right - off, mCircleBox.bottom - off);
+
+
+                        mDrawCanvas.drawArc(oval, angle + sliceSpace / 2f, newangle * mPhaseY
                                 - sliceSpace / 2f, true, mRenderPaint);
                     }
 
@@ -415,13 +424,13 @@ public class PieChart extends PieRadarChartBase<PieData> {
         // get whole the radius
         float r = getRadius();
 
-        float off = r / 2f;
-
-        if (mDrawHole) {
-            off = (r - (r / 100f * mHoleRadiusPercent)) / 2f;
-        }
-
-        r -= off; // offset to keep things inside the chart
+//        float off = r / 2f;
+//
+//        if (mDrawHole) {
+//            off = (r - (r / 100f * mHoleRadiusPercent)) / 2f;
+//        }
+//
+//        r -= off; // offset to keep things inside the chart
 
         ArrayList<PieDataSet> dataSets = mCurrentData.getDataSets();
 

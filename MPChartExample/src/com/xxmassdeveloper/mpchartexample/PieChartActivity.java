@@ -53,6 +53,7 @@ public class PieChartActivity extends DemoBase implements OnSeekBarChangeListene
 
         // change the color of the center-hole
         mChart.setHoleColor(Color.WHITE);
+        mChart.setValueTextColor(Color.BLACK);
 
         Typeface tf = Typeface.createFromAsset(getAssets(), "OpenSans-Regular.ttf");
 
