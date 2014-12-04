@@ -282,15 +282,16 @@ public class PieChart extends PieRadarChartBase<PieData> {
         float r = getRadius();
 
 
-        float off = (r - (r / 100f * mHoleRadiusPercent)) / 2f;
+        float off = 40;
         RectF oval;
 
         boolean drawStroke = mDrawHoleTransparent && mDrawHole;
 
         if(drawStroke){
             float strokeWidth = r*(1-mHoleRadiusPercent/100);
-            oval = new RectF(mCircleBox.left + off + strokeWidth /2, mCircleBox.top + off + strokeWidth /2 ,
-                    mCircleBox.right - off - strokeWidth /2, mCircleBox.bottom - off- strokeWidth /2);
+            off = strokeWidth + 20;
+            oval = new RectF(mCircleBox.left + off, mCircleBox.top + off,
+                    mCircleBox.right - off, mCircleBox.bottom - off);
             mRenderPaint.setStrokeWidth(strokeWidth);
             mRenderPaint.setAntiAlias(true);
             mRenderPaint.setStyle(Paint.Style.STROKE);
