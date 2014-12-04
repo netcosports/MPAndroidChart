@@ -102,9 +102,6 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
      */
     protected T mOriginalData = null;
 
-    /** the canvas that is used for drawing on the bitmap */
-    protected Canvas mDrawCanvas;
-
     /** the lowest value the chart can display */
     protected float mYChartMin = 0.0f;
 
@@ -458,12 +455,6 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
     /** flag that indicates if offsets calculation has already been done or not */
     private boolean mOffsetsCalculated = false;
 
-    /**
-     * Bitmap object used for drawing. This is necessary because hardware
-     * acceleration uses OpenGL which only allows a specific texture size to be
-     * drawn on the canvas directly.
-     **/
-    protected Bitmap mDrawBitmap;
 
     /** paint object used for drawing the bitmap */
     protected Paint mDrawPaint;
@@ -491,15 +482,15 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
             mOffsetsCalculated = true;
         }
 
-        if (mDrawBitmap == null || mDrawCanvas == null) {
-
-            mDrawBitmap = Bitmap.createBitmap(getWidth(), getHeight(),
-                    Bitmap.Config.ARGB_4444);
-            mDrawCanvas = new Canvas(mDrawBitmap);
-        }
-
-        // clear everything
-        mDrawBitmap.eraseColor(Color.TRANSPARENT);
+//        if (mDrawBitmap == null || mDrawCanvas == null) {
+//
+//            mDrawBitmap = Bitmap.createBitmap(getWidth(), getHeight(),
+//                    Bitmap.Config.ARGB_8888);
+//            mDrawCanvas = new Canvas(mDrawBitmap);
+//        }
+//
+//        // clear everything
+//        mDrawBitmap.eraseColor(Color.TRANSPARENT);
 
         // mDrawCanvas.drawColor(Color.WHITE);
         // canvas.drawColor(Color.TRANSPARENT,
@@ -757,7 +748,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
     /**
      * draws the legend
      */
-    protected void drawLegend() {
+    protected void drawLegend(Canvas canvas) {
 
         if (!mDrawLegend || mLegend == null || mLegend.getPosition() == LegendPosition.NONE)
             return;
@@ -800,7 +791,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
                 for (int i = 0; i < labels.length; i++) {
 
-                    mLegend.drawForm(mDrawCanvas, posX, posY, mLegendFormPaint, i);
+                    mLegend.drawForm(canvas, posX, posY, mLegendFormPaint, i);
 
                     // grouped forms have null labels
                     if (labels[i] != null) {
@@ -809,7 +800,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
                         if (mLegend.getColors()[i] != -2)
                             posX += formTextSpaceAndForm;
 
-                        mLegend.drawLabel(mDrawCanvas, posX, posY + textDrop, mLegendLabelPaint, i);
+                        mLegend.drawLabel(canvas, posX, posY + textDrop, mLegendLabelPaint, i);
                         posX += Utils.calcTextWidth(mLegendLabelPaint, labels[i])
                                 + mLegend.getXEntrySpace();
                     } else {
@@ -829,14 +820,14 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
                         posX -= Utils.calcTextWidth(mLegendLabelPaint, labels[i])
                                 + mLegend.getXEntrySpace();
-                        mLegend.drawLabel(mDrawCanvas, posX, posY + textDrop, mLegendLabelPaint, i);
+                        mLegend.drawLabel(canvas, posX, posY + textDrop, mLegendLabelPaint, i);
                         if (mLegend.getColors()[i] != -2)
                             posX -= formTextSpaceAndForm;
                     } else {
                         posX -= stackSpace + formSize;
                     }
 
-                    mLegend.drawForm(mDrawCanvas, posX, posY, mLegendFormPaint, i);
+                    mLegend.drawForm(canvas, posX, posY, mLegendFormPaint, i);
                 }
 
                 break;
@@ -848,7 +839,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
                 for (int i = 0; i < labels.length; i++) {
 
-                    mLegend.drawForm(mDrawCanvas, posX + stack, posY, mLegendFormPaint, i);
+                    mLegend.drawForm(canvas, posX + stack, posY, mLegendFormPaint, i);
 
                     if (labels[i] != null) {
 
@@ -861,13 +852,13 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
                             posY += textDrop;
 
-                            mLegend.drawLabel(mDrawCanvas, x, posY,
+                            mLegend.drawLabel(canvas, x, posY,
                                     mLegendLabelPaint, i);
                         } else {
 
                             posY += textSize * 1.2f + formSize;
 
-                            mLegend.drawLabel(mDrawCanvas, posX, posY,
+                            mLegend.drawLabel(canvas, posX, posY,
                                     mLegendLabelPaint, i);
 
                         }
@@ -888,7 +879,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
                 for (int i = 0; i < labels.length; i++) {
 
-                    mLegend.drawForm(mDrawCanvas, posX + stack, posY, mLegendFormPaint, i);
+                    mLegend.drawForm(canvas, posX + stack, posY, mLegendFormPaint, i);
 
                     if (labels[i] != null) {
 
@@ -901,13 +892,13 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
                             posY += textDrop;
 
-                            mLegend.drawLabel(mDrawCanvas, x, posY,
+                            mLegend.drawLabel(canvas, x, posY,
                                     mLegendLabelPaint, i);
                         } else {
 
                             posY += textSize * 1.2f + formSize;
 
-                            mLegend.drawLabel(mDrawCanvas, posX, posY,
+                            mLegend.drawLabel(canvas, posX, posY,
                                     mLegendLabelPaint, i);
 
                         }
@@ -931,7 +922,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
                 for (int i = 0; i < labels.length; i++) {
 
-                    mLegend.drawForm(mDrawCanvas, posX, posY, mLegendFormPaint, i);
+                    mLegend.drawForm(canvas, posX, posY, mLegendFormPaint, i);
 
                     // grouped forms have null labels
                     if (labels[i] != null) {
@@ -940,7 +931,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
                         if (mLegend.getColors()[i] != -2)
                             posX += formTextSpaceAndForm;
 
-                        mLegend.drawLabel(mDrawCanvas, posX, posY + textDrop, mLegendLabelPaint, i);
+                        mLegend.drawLabel(canvas, posX, posY + textDrop, mLegendLabelPaint, i);
                         posX += Utils.calcTextWidth(mLegendLabelPaint, labels[i])
                                 + mLegend.getXEntrySpace();
                     } else {
@@ -963,7 +954,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
                 for (int i = 0; i < labels.length; i++) {
 
-                    mLegend.drawForm(mDrawCanvas, posX + stack, posY, mLegendFormPaint, i);
+                    mLegend.drawForm(canvas, posX + stack, posY, mLegendFormPaint, i);
 
                     if (labels[i] != null) {
 
@@ -976,13 +967,13 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
                             posY += textDrop;
 
-                            mLegend.drawLabel(mDrawCanvas, x, posY,
+                            mLegend.drawLabel(canvas, x, posY,
                                     mLegendLabelPaint, i);
                         } else {
 
                             posY += textSize * 1.2f + formSize;
 
-                            mLegend.drawLabel(mDrawCanvas, posX, posY,
+                            mLegend.drawLabel(canvas, posX, posY,
                                     mLegendLabelPaint, i);
 
                         }
@@ -1005,7 +996,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
                 for (int i = 0; i < labels.length; i++) {
 
-                    mLegend.drawForm(mDrawCanvas, posX + stack, posY, mLegendFormPaint, i);
+                    mLegend.drawForm(canvas, posX + stack, posY, mLegendFormPaint, i);
 
                     if (labels[i] != null) {
 
@@ -1018,13 +1009,13 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
                             posY += textDrop;
 
-                            mLegend.drawLabel(mDrawCanvas, x, posY,
+                            mLegend.drawLabel(canvas, x, posY,
                                     mLegendLabelPaint, i);
                         } else {
 
                             posY += textSize * 1.2f + formSize;
 
-                            mLegend.drawLabel(mDrawCanvas, posX, posY,
+                            mLegend.drawLabel(canvas, posX, posY,
                                     mLegendLabelPaint, i);
 
                         }
@@ -1046,9 +1037,9 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
     /**
      * draws the description text in the bottom right corner of the chart
      */
-    protected void drawDescription() {
+    protected void drawDescription(Canvas canvas) {
 
-        mDrawCanvas
+        canvas
                 .drawText(mDescription, getWidth() - mOffsetRight - 10, getHeight() - mOffsetBottom
                         - 10, mDescPaint);
     }
@@ -1056,22 +1047,22 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
     /**
      * draws all the text-values to the chart
      */
-    protected abstract void drawValues();
+    protected abstract void drawValues(Canvas canvas);
 
     /**
      * draws the actual data
      */
-    protected abstract void drawData();
+    protected abstract void drawData(Canvas canvas);
 
     /**
      * draws additional stuff, whatever that might be
      */
-    protected abstract void drawAdditional();
+    protected abstract void drawAdditional(Canvas canvas);
 
     /**
      * draws the values of the chart that need highlightning
      */
-    protected abstract void drawHighlights();
+    protected abstract void drawHighlights(Canvas canvas);
 
     /**
      * ################ ################ ################ ################
@@ -1185,7 +1176,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
     /**
      * draws all MarkerViews on the highlighted positions
      */
-    protected void drawMarkers() {
+    protected void drawMarkers(Canvas canvas) {
 
         // if there is no marker view or drawing marker is disabled
         if (mMarkerView == null || !mDrawMarkerViews || !valuesToHighlight())
@@ -1218,7 +1209,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
                         MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
                 mMarkerView.layout(0, 0, mMarkerView.getMeasuredWidth(),
                         mMarkerView.getMeasuredHeight());
-                mMarkerView.draw(mDrawCanvas, pos[0], pos[1]);
+                mMarkerView.draw(canvas, pos[0], pos[1]);
             }
         }
     }
@@ -1436,14 +1427,6 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
      */
     /** BELOW THIS ONLY GETTERS AND SETTERS */
 
-    /**
-     * Returns the canvas object the chart uses for drawing.
-     * 
-     * @return
-     */
-    public Canvas getCanvas() {
-        return mDrawCanvas;
-    }
 
     /**
      * set a selection listener for the chart
@@ -2351,10 +2334,11 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-
         // create a new bitmap with the new dimensions
-        mDrawBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_4444);
-        mDrawCanvas = new Canvas(mDrawBitmap);
+//        if (mDrawBitmap == null) {
+//            mDrawBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+//            mDrawCanvas = new Canvas(mDrawBitmap);
+//        }
 
         // prepare content rect and matrices
         prepareContentRect();
@@ -2383,6 +2367,14 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
             // avoid memory allocations here (for performance)
             return mFormat.format(value);
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+//        if(mDrawBitmap != null){
+//            mDrawBitmap.recycle();
+//        }
     }
 
     // @Override

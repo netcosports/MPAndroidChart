@@ -111,35 +111,33 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
         if (mDataNotSet)
             return;
 
-        drawXLabels();
+        drawXLabels(canvas);
 
-        drawWeb();
+        drawWeb(canvas);
 
-        drawLimitLines();
+        drawLimitLines(canvas);
 
-        drawData();
+        drawData(canvas);
 
-        drawAdditional();
+        drawAdditional(canvas);
 
-        drawHighlights();
+        drawHighlights(canvas);
 
-        drawYLabels();
+        drawYLabels(canvas);
 
-        drawValues();
+        drawValues(canvas);
 
-        drawLegend();
+        drawLegend(canvas);
 
-        drawDescription();
+        drawDescription(canvas);
 
-        drawMarkers();
-
-        canvas.drawBitmap(mDrawBitmap, 0, 0, mDrawPaint);
+        drawMarkers(canvas);
     }
 
     /**
      * Draws the spider web.
      */
-    private void drawWeb() {
+    private void drawWeb(Canvas canvas) {
 
         if (!mDrawWeb)
             return;
@@ -161,7 +159,7 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
 
             PointF p = getPosition(c, mYChartMax * factor, sliceangle * i + mRotationAngle);
 
-            mDrawCanvas.drawLine(c.x, c.y, p.x, p.y, mWebPaint);
+            canvas.drawLine(c.x, c.y, p.x, p.y, mWebPaint);
         }
 
         // draw the inner-web
@@ -180,13 +178,13 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
                 PointF p1 = getPosition(c, r, sliceangle * i + mRotationAngle);
                 PointF p2 = getPosition(c, r, sliceangle * (i + 1) + mRotationAngle);
 
-                mDrawCanvas.drawLine(p1.x, p1.y, p2.x, p2.y, mWebPaint);
+                canvas.drawLine(p1.x, p1.y, p2.x, p2.y, mWebPaint);
             }
         }
     }
 
     @Override
-    protected void drawData() {
+    protected void drawData(Canvas canvas) {
 
         ArrayList<RadarDataSet> dataSets = mCurrentData.getDataSets();
 
@@ -225,7 +223,7 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
             if (dataSet.isDrawFilledEnabled()) {
                 mRenderPaint.setStyle(Paint.Style.FILL);
                 mRenderPaint.setAlpha(dataSet.getFillAlpha());
-                mDrawCanvas.drawPath(surface, mRenderPaint);
+                canvas.drawPath(surface, mRenderPaint);
                 mRenderPaint.setAlpha(255);
             }
 
@@ -234,14 +232,14 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
 
             // draw the line (only if filled is disabled or alpha is below 255)
             if (!dataSet.isDrawFilledEnabled() || dataSet.getFillAlpha() < 255)
-                mDrawCanvas.drawPath(surface, mRenderPaint);
+                canvas.drawPath(surface, mRenderPaint);
         }
     }
 
     /**
      * Draws the limit lines if there are one.
      */
-    private void drawLimitLines() {
+    private void drawLimitLines(Canvas canvas) {
 
         ArrayList<LimitLine> limitLines = mOriginalData.getLimitLines();
 
@@ -280,7 +278,7 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
 
             limitPath.close();
 
-            mDrawCanvas.drawPath(limitPath, mLimitLinePaint);
+            canvas.drawPath(limitPath, mLimitLinePaint);
         }
     }
 
@@ -323,7 +321,7 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
     /**
      * Draws the y-labels of the RadarChart.
      */
-    private void drawYLabels() {
+    private void drawYLabels(Canvas canvas) {
 
         if (!mDrawYLabels)
             return;
@@ -352,9 +350,9 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
                     mYLabels.isSeparateThousandsEnabled());
 
             if (mYLabels.isDrawUnitsInYLabelEnabled())
-                mDrawCanvas.drawText(label + mUnit, p.x + 10, p.y - 5, mYLabelPaint);
+                canvas.drawText(label + mUnit, p.x + 10, p.y - 5, mYLabelPaint);
             else {
-                mDrawCanvas.drawText(label, p.x + 10, p.y - 5, mYLabelPaint);
+                canvas.drawText(label, p.x + 10, p.y - 5, mYLabelPaint);
             }
         }
     }
@@ -379,7 +377,7 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
     /**
      * Draws the x-labels of the chart.
      */
-    private void drawXLabels() {
+    private void drawXLabels(Canvas canvas) {
 
         if (!mDrawXLabels)
             return;
@@ -404,12 +402,12 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
 
             PointF p = getPosition(c, mYChartMax * factor + mXLabels.mLabelWidth / 2f, angle);
 
-            mDrawCanvas.drawText(text, p.x, p.y + mXLabels.mLabelHeight / 2f, mXLabelPaint);
+            canvas.drawText(text, p.x, p.y + mXLabels.mLabelHeight / 2f, mXLabelPaint);
         }
     }
 
     @Override
-    protected void drawValues() {
+    protected void drawValues(Canvas canvas) {
 
         // if values are drawn
         if (mDrawYValues) {
@@ -436,10 +434,10 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
                     PointF p = getPosition(c, e.getVal() * factor, sliceangle * j + mRotationAngle);
 
                     if (mDrawUnitInChart)
-                        mDrawCanvas.drawText(mValueFormatter.getFormattedValue(e.getVal()) + mUnit,
+                        canvas.drawText(mValueFormatter.getFormattedValue(e.getVal()) + mUnit,
                                 p.x, p.y - yoffset, mValuePaint);
                     else
-                        mDrawCanvas.drawText(mValueFormatter.getFormattedValue(e.getVal()),
+                        canvas.drawText(mValueFormatter.getFormattedValue(e.getVal()),
                                 p.x, p.y - yoffset, mValuePaint);
                 }
             }
@@ -447,7 +445,7 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
     }
 
     @Override
-    protected void drawHighlights() {
+    protected void drawHighlights(Canvas canvas) {
 
         // if there are values to highlight and highlighnting is enabled, do it
         if (mHighlightEnabled && valuesToHighlight()) {
@@ -481,7 +479,7 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
                         p.x, 0, p.x, getHeight(), 0, p.y, getWidth(), p.y
                 };
 
-                mDrawCanvas.drawLines(pts, mHighlightPaint);
+                canvas.drawLines(pts, mHighlightPaint);
             }
         }
     }

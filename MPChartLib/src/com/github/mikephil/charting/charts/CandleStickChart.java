@@ -2,6 +2,7 @@
 package com.github.mikephil.charting.charts;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 
@@ -39,7 +40,7 @@ public class CandleStickChart extends BarLineChartBase<CandleData> {
     }
 
     @Override
-    protected void drawData() {
+    protected void drawData(Canvas canvas) {
 
         ArrayList<CandleDataSet> dataSets = mCurrentData.getDataSets();
 
@@ -88,20 +89,20 @@ public class CandleStickChart extends BarLineChartBase<CandleData> {
                     continue;
 
                 // draw the shadow
-                mDrawCanvas.drawLine(xShadow, low, xShadow, high, mRenderPaint);
+                canvas.drawLine(xShadow, low, xShadow, high, mRenderPaint);
 
                 // decide weather the body is hollow or filled
                 if (open > close) {
 
                     mRenderPaint.setStyle(Paint.Style.FILL);
                     // draw the body
-                    mDrawCanvas.drawRect(leftBody, close, rightBody, open, mRenderPaint);
+                    canvas.drawRect(leftBody, close, rightBody, open, mRenderPaint);
 
                 } else {
 
                     mRenderPaint.setStyle(Paint.Style.STROKE);
                     // draw the body
-                    mDrawCanvas.drawRect(leftBody, open, rightBody, close, mRenderPaint);
+                    canvas.drawRect(leftBody, open, rightBody, close, mRenderPaint);
                 }
             }
         }
@@ -141,19 +142,19 @@ public class CandleStickChart extends BarLineChartBase<CandleData> {
     }
 
     @Override
-    protected void drawValues() {
+    protected void drawValues(Canvas canvas) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    protected void drawAdditional() {
+    protected void drawAdditional(Canvas canvas) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    protected void drawHighlights() {
+    protected void drawHighlights(Canvas canvas) {
 
         for (int i = 0; i < mIndicesToHightlight.length; i++) {
 
@@ -187,10 +188,10 @@ public class CandleStickChart extends BarLineChartBase<CandleData> {
             transformPointArray(horPts);
 
             // draw the vertical highlight lines
-            mDrawCanvas.drawLines(vertPts, mHighlightPaint);
+            canvas.drawLines(vertPts, mHighlightPaint);
 
             // draw the horizontal highlight lines
-            mDrawCanvas.drawLines(horPts, mHighlightPaint);
+            canvas.drawLines(horPts, mHighlightPaint);
         }
     }
 

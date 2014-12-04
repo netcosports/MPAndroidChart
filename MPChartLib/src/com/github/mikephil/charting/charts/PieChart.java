@@ -50,6 +50,11 @@ public class PieChart extends PieRadarChartBase<PieData> {
     private boolean mDrawHole = true;
 
     /**
+     * if true, the hole inside the chart will be transparent
+     */
+    private boolean mDrawHoleTransparent = true;
+
+    /**
      * variable for the text that is drawn in the center of the pie-chart. If
      * this value is null, the default is "Total Value\n + getYValueSum()"
      */
@@ -139,21 +144,19 @@ public class PieChart extends PieRadarChartBase<PieData> {
         if (mDataNotSet)
             return;
 
-        drawHighlights();
+        drawHighlights(canvas);
 
-        drawData();
+        drawData(canvas);
 
-        drawAdditional();
+        drawAdditional(canvas);
 
-        drawValues();
+        drawValues(canvas);
 
-        drawLegend();
+        drawLegend(canvas);
 
-        drawDescription();
+        drawDescription(canvas);
 
-        drawCenterText();
-
-        canvas.drawBitmap(mDrawBitmap, 0, 0, mDrawPaint);
+        drawCenterText(canvas);
     }
 
     @Override
@@ -216,7 +219,7 @@ public class PieChart extends PieRadarChartBase<PieData> {
     }
 
     @Override
-    protected void drawHighlights() {
+    protected void drawHighlights(Canvas canvas) {
 
         // if there are values to highlight and highlighnting is enabled, do it
         if (mHighlightEnabled && valuesToHighlight()) {
@@ -260,14 +263,14 @@ public class PieChart extends PieRadarChartBase<PieData> {
 
                 // redefine the rect that contains the arc so that the
                 // highlighted pie is not cut off
-                mDrawCanvas.drawArc(highlighted, angle + set.getSliceSpace() / 2f, sliceDegrees
+                canvas.drawArc(highlighted, angle + set.getSliceSpace() / 2f, sliceDegrees
                         - set.getSliceSpace() / 2f, true, mRenderPaint);
             }
         }
     }
 
     @Override
-    protected void drawData() {
+    protected void drawData(Canvas canvas) {
 
         float angle = mRotationAngle;
 
@@ -275,6 +278,27 @@ public class PieChart extends PieRadarChartBase<PieData> {
 
         int cnt = 0;
 
+        // get whole the radius
+        float r = getRadius();
+
+
+        float off = (r - (r / 100f * mHoleRadiusPercent)) / 2f;
+        RectF oval;
+
+        boolean drawStroke = mDrawHoleTransparent && mDrawHole;
+
+        if(drawStroke){
+            float strokeWidth = r*(1-mHoleRadiusPercent/100);
+            oval = new RectF(mCircleBox.left + off + strokeWidth /2, mCircleBox.top + off + strokeWidth /2 ,
+                    mCircleBox.right - off - strokeWidth /2, mCircleBox.bottom - off- strokeWidth /2);
+            mRenderPaint.setStrokeWidth(strokeWidth);
+            mRenderPaint.setAntiAlias(true);
+            mRenderPaint.setStyle(Paint.Style.STROKE);
+        }
+        else{
+            oval = new RectF(mCircleBox.left + off, mCircleBox.top + off,
+                    mCircleBox.right - off, mCircleBox.bottom - off);
+        }
         for (int i = 0; i < mCurrentData.getDataSetCount(); i++) {
 
             PieDataSet dataSet = dataSets.get(i);
@@ -294,16 +318,8 @@ public class PieChart extends PieRadarChartBase<PieData> {
 
                         mRenderPaint.setColor(dataSet.getColor(j));
 
-                        // get whole the radius
-                        float r = getRadius();
-
-                        float off = (r - (r / 100f * mHoleRadiusPercent)) / 2f;
-                        RectF oval = new RectF(mCircleBox.left + off, mCircleBox.top + off,
-                                mCircleBox.right - off, mCircleBox.bottom - off);
-
-
-                        mDrawCanvas.drawArc(oval, angle + sliceSpace / 2f, newangle * mPhaseY
-                                - sliceSpace / 2f, true, mRenderPaint);
+                        canvas.drawArc(oval, angle + sliceSpace / 2f, newangle * mPhaseY
+                                - sliceSpace / 2f, !drawStroke, mRenderPaint);
                     }
 
                     // if(sliceSpace > 0f) {
@@ -348,9 +364,9 @@ public class PieChart extends PieRadarChartBase<PieData> {
      * draws the hole in the center of the chart and the transparent circle /
      * hole
      */
-    private void drawHole() {
+    private void drawHole(Canvas canvas) {
 
-        if (mDrawHole) {
+        if (mDrawHole && !mDrawHoleTransparent) {
 
             float radius = getRadius();
 
@@ -359,7 +375,7 @@ public class PieChart extends PieRadarChartBase<PieData> {
             int color = mHolePaint.getColor();
 
             // draw the hole-circle
-            mDrawCanvas.drawCircle(c.x, c.y,
+            canvas.drawCircle(c.x, c.y,
                     radius / 100 * mHoleRadiusPercent, mHolePaint);
 
             if (mTransparentCircleRadius > mHoleRadiusPercent) {
@@ -368,7 +384,7 @@ public class PieChart extends PieRadarChartBase<PieData> {
                 mHolePaint.setColor(color & 0x60FFFFFF);
 
                 // draw the transparent-circle
-                mDrawCanvas.drawCircle(c.x, c.y,
+                canvas.drawCircle(c.x, c.y,
                         radius / 100 * mTransparentCircleRadius, mHolePaint);
 
                 mHolePaint.setColor(color);
@@ -380,7 +396,7 @@ public class PieChart extends PieRadarChartBase<PieData> {
      * draws the description text in the center of the pie chart makes most
      * sense when center-hole is enabled
      */
-    private void drawCenterText() {
+    private void drawCenterText(Canvas canvas) {
 
         if (mDrawCenterText && mCenterText != null) {
 
@@ -403,7 +419,7 @@ public class PieChart extends PieRadarChartBase<PieData> {
 
                 String line = lines[lines.length - i - 1];
 
-                mDrawCanvas.drawText(line, c.x, y
+                canvas.drawText(line, c.x, y
                                 + lineHeight * cnt - totalheight / 2f,
                         mCenterTextPaint);
                 cnt--;
@@ -413,7 +429,7 @@ public class PieChart extends PieRadarChartBase<PieData> {
     }
 
     @Override
-    protected void drawValues() {
+    protected void drawValues(Canvas canvas) {
 
         // if neither xvals nor yvals are drawn, return
         if (!mDrawXVals && !mDrawYValues)
@@ -475,17 +491,17 @@ public class PieChart extends PieRadarChartBase<PieData> {
                     float lineHeight = (mValuePaint.ascent() + mValuePaint.descent()) * 1.6f;
                     y -= lineHeight / 2;
 
-                    mDrawCanvas.drawText(val, x, y, mValuePaint);
+                    canvas.drawText(val, x, y, mValuePaint);
                     if (j < mCurrentData.getXValCount())
-                        mDrawCanvas.drawText(mCurrentData.getXVals().get(j), x, y + lineHeight,
+                        canvas.drawText(mCurrentData.getXVals().get(j), x, y + lineHeight,
                                 mValuePaint);
 
                 } else if (mDrawXVals && !mDrawYValues) {
                     if (j < mCurrentData.getXValCount())
-                        mDrawCanvas.drawText(mCurrentData.getXVals().get(j), x, y, mValuePaint);
+                        canvas.drawText(mCurrentData.getXVals().get(j), x, y, mValuePaint);
                 } else if (!mDrawXVals && mDrawYValues) {
 
-                    mDrawCanvas.drawText(val, x, y, mValuePaint);
+                    canvas.drawText(val, x, y, mValuePaint);
                 }
 
                 cnt++;
@@ -494,8 +510,8 @@ public class PieChart extends PieRadarChartBase<PieData> {
     }
 
     @Override
-    protected void drawAdditional() {
-        drawHole();
+    protected void drawAdditional(Canvas canvas) {
+        drawHole(canvas);
     }
 
     /**
@@ -577,11 +593,7 @@ public class PieChart extends PieRadarChartBase<PieData> {
      * @param enable true to enable transparency and display widget or background under pie chart.
      */
     public void setHoleTransparent(boolean enable) {
-        if (enable) {
-            mHolePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
-        } else {
-            mHolePaint.setXfermode(null);
-        }
+        this.mDrawHoleTransparent = enable;
     }
 
     /**

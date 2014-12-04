@@ -2,6 +2,7 @@
 package com.github.mikephil.charting.charts;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Path;
 import android.util.AttributeSet;
 
@@ -60,7 +61,7 @@ public class ScatterChart extends BarLineChartBase<ScatterData> {
     }
 
     @Override
-    protected void drawData() {
+    protected void drawData(Canvas canvas) {
 
         ArrayList<ScatterDataSet> dataSets = mCurrentData.getDataSets();
 
@@ -92,22 +93,22 @@ public class ScatterChart extends BarLineChartBase<ScatterData> {
 
                 if (shape == ScatterShape.SQUARE) {
 
-                    mDrawCanvas.drawRect(valuePoints[j] - shapeHalf,
+                    canvas.drawRect(valuePoints[j] - shapeHalf,
                             valuePoints[j + 1] - shapeHalf, valuePoints[j]
                                     + shapeHalf, valuePoints[j + 1]
                                     + shapeHalf, mRenderPaint);
 
                 } else if (shape == ScatterShape.CIRCLE) {
 
-                    mDrawCanvas.drawCircle(valuePoints[j], valuePoints[j + 1], shapeHalf,
+                    canvas.drawCircle(valuePoints[j], valuePoints[j + 1], shapeHalf,
                             mRenderPaint);
 
                 } else if (shape == ScatterShape.CROSS) {
 
-                    mDrawCanvas.drawLine(valuePoints[j] - shapeHalf, valuePoints[j + 1],
+                    canvas.drawLine(valuePoints[j] - shapeHalf, valuePoints[j + 1],
                             valuePoints[j] + shapeHalf,
                             valuePoints[j + 1], mRenderPaint);
-                    mDrawCanvas.drawLine(valuePoints[j], valuePoints[j + 1] - shapeHalf,
+                    canvas.drawLine(valuePoints[j], valuePoints[j + 1] - shapeHalf,
                             valuePoints[j], valuePoints[j + 1]
                                     + shapeHalf, mRenderPaint);
 
@@ -120,7 +121,7 @@ public class ScatterChart extends BarLineChartBase<ScatterData> {
                     tri.lineTo(valuePoints[j] - shapeHalf, valuePoints[j + 1] + shapeHalf);
                     tri.close();
 
-                    mDrawCanvas.drawPath(tri, mRenderPaint);
+                    canvas.drawPath(tri, mRenderPaint);
 
                 } else if (shape == ScatterShape.CUSTOM) {
 
@@ -131,14 +132,14 @@ public class ScatterChart extends BarLineChartBase<ScatterData> {
 
                     // transform the provided custom path
                     transformPath(customShape);
-                    mDrawCanvas.drawPath(customShape, mRenderPaint);
+                    canvas.drawPath(customShape, mRenderPaint);
                 }
             }
         }
     }
 
     @Override
-    protected void drawValues() {
+    protected void drawValues(Canvas canvas) {
         // if values are drawn
         if (mDrawYValues && mCurrentData.getYValCount() < mMaxVisibleCount * mScaleX) {
 
@@ -167,12 +168,12 @@ public class ScatterChart extends BarLineChartBase<ScatterData> {
 
                     if (mDrawUnitInChart) {
 
-                        mDrawCanvas.drawText(mValueFormatter.getFormattedValue(val) + mUnit,
+                        canvas.drawText(mValueFormatter.getFormattedValue(val) + mUnit,
                                 positions[j],
                                 positions[j + 1] - shapeSize, mValuePaint);
                     } else {
 
-                        mDrawCanvas.drawText(mValueFormatter.getFormattedValue(val), positions[j],
+                        canvas.drawText(mValueFormatter.getFormattedValue(val), positions[j],
                                 positions[j + 1] - shapeSize,
                                 mValuePaint);
                     }
@@ -182,7 +183,7 @@ public class ScatterChart extends BarLineChartBase<ScatterData> {
     }
 
     @Override
-    protected void drawHighlights() {
+    protected void drawHighlights(Canvas canvas) {
 
         for (int i = 0; i < mIndicesToHightlight.length; i++) {
 
@@ -209,12 +210,12 @@ public class ScatterChart extends BarLineChartBase<ScatterData> {
 
             transformPointArray(pts);
             // draw the highlight lines
-            mDrawCanvas.drawLines(pts, mHighlightPaint);
+            canvas.drawLines(pts, mHighlightPaint);
         }
     }
 
     @Override
-    protected void drawAdditional() {
+    protected void drawAdditional(Canvas canvas) {
 
     }
 

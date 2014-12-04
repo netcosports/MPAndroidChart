@@ -209,47 +209,45 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
             calcModulus();
 
         // execute all drawing commands
-        drawGridBackground();
+        drawGridBackground(canvas);
 
         prepareYLabels();
 
         // make sure the graph values and grid cannot be drawn outside the
         // content-rect
-        int clipRestoreCount = mDrawCanvas.save();
-        mDrawCanvas.clipRect(mContentRect);
+        int clipRestoreCount = canvas.save();
+        canvas.clipRect(mContentRect);
 
-        drawHorizontalGrid();
+        drawHorizontalGrid(canvas);
 
-        drawVerticalGrid();
+        drawVerticalGrid(canvas);
 
-        drawData();
+        drawData(canvas);
 
-        drawLimitLines();
+        drawLimitLines(canvas);
 
         // if highlighting is enabled
         if (mHighlightEnabled && mHighLightIndicatorEnabled && valuesToHighlight())
-            drawHighlights();
+            drawHighlights(canvas);
 
         // Removes clipping rectangle
-        mDrawCanvas.restoreToCount(clipRestoreCount);
+        canvas.restoreToCount(clipRestoreCount);
 
-        drawAdditional();
+        drawAdditional(canvas);
 
-        drawXLabels();
+        drawXLabels(canvas);
 
-        drawYLabels();
+        drawYLabels(canvas);
 
-        drawValues();
+        drawValues(canvas);
 
-        drawLegend();
+        drawLegend(canvas);
 
-        drawBorder();
+        drawBorder(canvas);
 
-        drawMarkers();
+        drawMarkers(canvas);
 
-        drawDescription();
-
-        canvas.drawBitmap(mDrawBitmap, 0, 0, mDrawPaint);
+        drawDescription(canvas);
 
         if (mLogEnabled)
             Log.i(LOG_TAG, "DrawTime: " + (System.currentTimeMillis() - starttime) + " ms");
@@ -649,7 +647,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
     /**
      * draws the x-axis labels to the screen depending on their position
      */
-    private void drawXLabels() {
+    private void drawXLabels(Canvas canvas) {
 
         if (!mDrawXLabels)
             return;
@@ -662,24 +660,24 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
 
         if (mXLabels.getPosition() == XLabelPosition.TOP) {
 
-            drawXLabels(getOffsetTop() - yoffset);
+            drawXLabels(canvas, getOffsetTop() - yoffset);
 
         } else if (mXLabels.getPosition() == XLabelPosition.BOTTOM) {
 
-            drawXLabels(getHeight() - mOffsetBottom + mXLabels.mLabelHeight + yoffset * 1.5f);
+            drawXLabels(canvas, getHeight() - mOffsetBottom + mXLabels.mLabelHeight + yoffset * 1.5f);
 
         } else if (mXLabels.getPosition() == XLabelPosition.BOTTOM_INSIDE) {
 
-            drawXLabels(getHeight() - getOffsetBottom() - yoffset);
+            drawXLabels(canvas, getHeight() - getOffsetBottom() - yoffset);
 
         } else if (mXLabels.getPosition() == XLabelPosition.TOP_INSIDE) {
 
-            drawXLabels(getOffsetTop() + yoffset + mXLabels.mLabelHeight);
+            drawXLabels(canvas, getOffsetTop() + yoffset + mXLabels.mLabelHeight);
 
         } else { // BOTH SIDED
 
-            drawXLabels(getOffsetTop() - 7);
-            drawXLabels(getHeight() - mOffsetBottom + mXLabels.mLabelHeight + yoffset * 1.6f);
+            drawXLabels(canvas, getOffsetTop() - 7);
+            drawXLabels(canvas, getHeight() - mOffsetBottom + mXLabels.mLabelHeight + yoffset * 1.6f);
         }
     }
 
@@ -688,7 +686,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
      * 
      * @param yPos
      */
-    protected void drawXLabels(float yPos) {
+    protected void drawXLabels(Canvas canvas, float yPos) {
 
         // pre allocate to save performance (dont allocate in loop)
         float[] position = new float[] {
@@ -726,7 +724,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
                     }
                 }
 
-                mDrawCanvas.drawText(label, position[0],
+                canvas.drawText(label, position[0],
                         yPos,
                         mXLabelPaint);
             }
@@ -736,7 +734,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
     /**
      * draws the y-axis labels to the screen
      */
-    private void drawYLabels() {
+    private void drawYLabels(Canvas canvas) {
 
         if (!mDrawYLabels)
             return;
@@ -763,32 +761,32 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
         if (mYLabels.getPosition() == YLabelPosition.LEFT) {
 
             mYLabelPaint.setTextAlign(Align.RIGHT);
-            drawYLabels(mOffsetLeft - xoffset, positions, yoffset);
+            drawYLabels(canvas, mOffsetLeft - xoffset, positions, yoffset);
 
         } else if (mYLabels.getPosition() == YLabelPosition.RIGHT) {
 
             mYLabelPaint.setTextAlign(Align.LEFT);
-            drawYLabels(getWidth() - mOffsetRight + xoffset, positions, yoffset);
+            drawYLabels(canvas, getWidth() - mOffsetRight + xoffset, positions, yoffset);
 
         } else if (mYLabels.getPosition() == YLabelPosition.RIGHT_INSIDE) {
 
             mYLabelPaint.setTextAlign(Align.RIGHT);
-            drawYLabels(getWidth() - mOffsetRight - xoffset, positions, yoffset);
+            drawYLabels(canvas, getWidth() - mOffsetRight - xoffset, positions, yoffset);
 
         } else if (mYLabels.getPosition() == YLabelPosition.LEFT_INSIDE) {
 
             mYLabelPaint.setTextAlign(Align.LEFT);
-            drawYLabels(mOffsetLeft + xoffset, positions, yoffset);
+            drawYLabels(canvas, mOffsetLeft + xoffset, positions, yoffset);
 
         } else { // BOTH SIDED Y-AXIS LABELS
 
             // draw left legend
             mYLabelPaint.setTextAlign(Align.RIGHT);
-            drawYLabels(mOffsetLeft - xoffset, positions, yoffset);
+            drawYLabels(canvas, mOffsetLeft - xoffset, positions, yoffset);
 
             // draw right legend
             mYLabelPaint.setTextAlign(Align.LEFT);
-            drawYLabels(getWidth() - mOffsetRight + xoffset, positions, yoffset);
+            drawYLabels(canvas, getWidth() - mOffsetRight + xoffset, positions, yoffset);
         }
     }
 
@@ -798,7 +796,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
      * @param xPos
      * @param positions
      */
-    private void drawYLabels(float xPos, float[] positions, float yOffset) {
+    private void drawYLabels(Canvas canvas, float xPos, float[] positions, float yOffset) {
 
         // draw
         for (int i = 0; i < mYLabels.mEntryCount; i++) {
@@ -809,10 +807,10 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
                 return;
 
             if (mYLabels.isDrawUnitsInYLabelEnabled()) {
-                mDrawCanvas.drawText(text + mUnit, xPos, positions[i * 2 + 1] + yOffset,
+                canvas.drawText(text + mUnit, xPos, positions[i * 2 + 1] + yOffset,
                         mYLabelPaint);
             } else {
-                mDrawCanvas.drawText(text, xPos, positions[i * 2 + 1] + yOffset, mYLabelPaint);
+                canvas.drawText(text, xPos, positions[i * 2 + 1] + yOffset, mYLabelPaint);
             }
         }
     }
@@ -832,7 +830,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
     /**
      * draws a line that surrounds the chart
      */
-    protected void drawBorder() {
+    protected void drawBorder(Canvas canvas) {
 
         if (!mDrawBorder || mBorderPositions == null)
             return;
@@ -841,20 +839,20 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
 
             switch (mBorderPositions[i]) {
                 case LEFT:
-                    mDrawCanvas.drawLine(mOffsetLeft, mOffsetTop, mOffsetLeft, getHeight()
+                    canvas.drawLine(mOffsetLeft, mOffsetTop, mOffsetLeft, getHeight()
                             - mOffsetBottom, mBorderPaint);
                     break;
                 case RIGHT:
-                    mDrawCanvas.drawLine(getWidth() - mOffsetRight, mOffsetTop, getWidth()
+                    canvas.drawLine(getWidth() - mOffsetRight, mOffsetTop, getWidth()
                             - mOffsetRight, getHeight()
                             - mOffsetBottom, mBorderPaint);
                     break;
                 case TOP:
-                    mDrawCanvas.drawLine(mOffsetLeft, mOffsetTop, getWidth() - mOffsetRight,
+                    canvas.drawLine(mOffsetLeft, mOffsetTop, getWidth() - mOffsetRight,
                             mOffsetTop, mBorderPaint);
                     break;
                 case BOTTOM:
-                    mDrawCanvas.drawLine(mOffsetLeft, getHeight()
+                    canvas.drawLine(mOffsetLeft, getHeight()
                             - mOffsetBottom, getWidth() - mOffsetRight, getHeight()
                             - mOffsetBottom, mBorderPaint);
                     break;
@@ -865,7 +863,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
     /**
      * draws the grid background
      */
-    protected void drawGridBackground() {
+    protected void drawGridBackground(Canvas canvas) {
 
         if (!mDrawGridBackground)
             return;
@@ -875,13 +873,13 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
                 getHeight() - (int) mOffsetBottom);
 
         // draw the grid background
-        mDrawCanvas.drawRect(gridBackground, mGridBackgroundPaint);
+        canvas.drawRect(gridBackground, mGridBackgroundPaint);
     }
 
     /**
      * draws the horizontal grid
      */
-    protected void drawHorizontalGrid() {
+    protected void drawHorizontalGrid(Canvas canvas) {
 
         if (!mDrawHorizontalGrid)
             return;
@@ -895,7 +893,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
             position[1] = mYLabels.mEntries[i];
             transformPointArray(position);
 
-            mDrawCanvas.drawLine(mOffsetLeft, position[1], getWidth() - mOffsetRight, position[1],
+            canvas.drawLine(mOffsetLeft, position[1], getWidth() - mOffsetRight, position[1],
                     mGridPaint);
         }
     }
@@ -903,7 +901,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
     /**
      * draws the vertical grid
      */
-    protected void drawVerticalGrid() {
+    protected void drawVerticalGrid(Canvas canvas) {
 
         if (!mDrawVerticalGrid || mCurrentData == null)
             return;
@@ -920,7 +918,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
 
             if (position[0] >= mOffsetLeft && position[0] <= getWidth()) {
 
-                mDrawCanvas.drawLine(position[0], mOffsetTop, position[0], getHeight()
+                canvas.drawLine(position[0], mOffsetTop, position[0], getHeight()
                         - mOffsetBottom, mGridPaint);
             }
         }
@@ -929,7 +927,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
     /**
      * Draws the limit lines if there are one.
      */
-    private void drawLimitLines() {
+    private void drawLimitLines(Canvas canvas) {
 
         ArrayList<LimitLine> limitLines = mOriginalData.getLimitLines();
 
@@ -954,7 +952,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
             mLimitLinePaint.setPathEffect(l.getDashPathEffect());
             mLimitLinePaint.setStrokeWidth(l.getLineWidth());
 
-            mDrawCanvas.drawLines(pts, mLimitLinePaint);
+            canvas.drawLines(pts, mLimitLinePaint);
 
             // if drawing the limit-value is enabled
             if (l.isDrawValueEnabled()) {
@@ -974,13 +972,13 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
                 if (l.getLabelPosition() == LimitLabelPosition.RIGHT) {
 
                     mValuePaint.setTextAlign(Align.RIGHT);
-                    mDrawCanvas.drawText(label, getWidth() - mOffsetRight
+                    canvas.drawText(label, getWidth() - mOffsetRight
                             - xOffset,
                             pos.y - yOffset, mValuePaint);
 
                 } else {
                     mValuePaint.setTextAlign(Align.LEFT);
-                    mDrawCanvas.drawText(label, mOffsetLeft
+                    canvas.drawText(label, mOffsetLeft
                             + xOffset,
                             pos.y - yOffset, mValuePaint);
                 }

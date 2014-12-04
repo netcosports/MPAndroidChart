@@ -2,6 +2,7 @@
 package com.github.mikephil.charting.charts;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Paint.Align;
@@ -157,7 +158,7 @@ public abstract class PieRadarChartBase<T extends ChartData<? extends DataSet<? 
     }
 
     @Override
-    protected void drawAdditional() {
+    protected void drawAdditional(Canvas canvas) {
         // TODO Auto-generated method stub
     }
 
