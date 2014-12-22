@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 
+import com.github.mikephil.charting.R;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.ChartData;
@@ -283,6 +284,8 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
         mLimitLinePaint.setStyle(Paint.Style.STROKE);
 
         mDrawPaint = new Paint(Paint.DITHER_FLAG);
+
+        mNoDataText = getContext().getString(R.string.chart_no_data);
     }
 
     // public void initWithDummyData() {
@@ -726,7 +729,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
     /**
      * transforms the given rect objects with the touch matrix only
      * 
-     * @param paths
+     * @param rects
      */
     protected void transformRectsTouch(ArrayList<RectF> rects) {
         for (int i = 0; i < rects.size(); i++) {
@@ -1126,11 +1129,12 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
     }
 
     /**
+     *
      * Highlights the value selected by touch gesture. Unlike
      * highlightValues(...), this generates a callback to the
      * OnChartValueSelectedListener.
-     * 
-     * @param highs
+     *
+     * @param high
      */
     public void highlightTouch(Highlight high) {
 
@@ -1218,7 +1222,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
      * Returns the actual position in pixels of the MarkerView for the given
      * Entry in the given DataSet.
      * 
-     * @param xIndex
+     * @param e
      * @param dataSetIndex
      * @return
      */
@@ -2018,8 +2022,8 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
     /**
      * returns the y-value for the given x-index and DataSet index
      * 
-     * @param index
-     * @param dataSet
+     * @param xIndex
+     * @param dataSetIndex
      * @return
      */
     public float getYValue(int xIndex, int dataSetIndex) {
@@ -2042,7 +2046,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
      * returns the DataSet with the given label that is stored in the ChartData
      * object.
      * 
-     * @param type
+     * @param dataSetLabel
      * @return
      */
     public DataSet<? extends Entry> getDataSetByLabel(String dataSetLabel) {
