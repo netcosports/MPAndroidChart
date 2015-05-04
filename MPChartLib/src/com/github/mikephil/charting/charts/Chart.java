@@ -759,7 +759,7 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
      */
     protected void drawLegend() {
 
-        if (!mDrawLegend || mLegend == null || mLegend.getPosition() == LegendPosition.NONE)
+        if (mLegend == null || mLegend.getPosition() == LegendPosition.NONE)
             return;
 
         String[] labels = mLegend.getLegendLabels();
@@ -791,6 +791,24 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
         float stack = 0f;
 
         boolean wasStacked = false;
+
+        if (!mDrawLegend) {
+            posX = mLegend.getOffsetLeft();
+            for (int i = 0; i < labels.length; i++) {
+                // grouped forms have null labels
+                if (labels[i] != null) {
+                    // make a step to the left
+                    if (mLegend.getColors()[i] != -2) {
+                        posX += formTextSpaceAndForm;
+                    }
+                    posX += Utils.calcTextWidth(mLegendLabelPaint, labels[i])
+                            + mLegend.getXEntrySpace();
+                } else {
+                    posX += formSize + stackSpace;
+                }
+            }
+            return;
+        }
 
         switch (mLegend.getPosition()) {
             case BELOW_CHART_LEFT:

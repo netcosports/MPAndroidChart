@@ -133,6 +133,8 @@ public abstract class PieRadarChartBase<T extends ChartData<? extends DataSet<? 
                     || mLegend.getPosition() == LegendPosition.BELOW_CHART_CENTER) {
 
                 legendBottom = getRequiredBottomOffset();
+            } else {
+                legendBottom = getRequiredBottomOffset();
             }
 
             legendRight += getRequiredBaseOffset();
@@ -140,6 +142,16 @@ public abstract class PieRadarChartBase<T extends ChartData<? extends DataSet<? 
 
             mLegend.setOffsetBottom(mLegendLabelPaint.getTextSize() * 4f);
             mLegend.setOffsetRight(legendRight);
+        } else {
+            if (mLegend != null) {
+                legendBottom = getRequiredBottomOffset();
+
+                legendRight += getRequiredBaseOffset();
+                legendTop += getRequiredBaseOffset();
+
+                mLegend.setOffsetBottom(mLegendLabelPaint.getTextSize() * 4f);
+                mLegend.setOffsetRight(legendRight);
+            }
         }
 
         float min = Utils.convertDpToPixel(11f);
