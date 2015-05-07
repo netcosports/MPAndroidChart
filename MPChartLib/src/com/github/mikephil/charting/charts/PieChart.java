@@ -94,6 +94,13 @@ public class PieChart extends PieRadarChartBase<PieData> {
      */
     private Paint mCenterTextPaint;
 
+    /**
+     * paint object for drawing values (text representing values of chart
+     * entries)
+     */
+    private Paint mBackgroundValuePaint;
+    private int mBackgroundColor = -1;
+
     public PieChart(Context context) {
         super(context);
     }
@@ -127,6 +134,11 @@ public class PieChart extends PieRadarChartBase<PieData> {
         mValuePaint.setTextSize(Utils.convertDpToPixel(13f));
         mValuePaint.setColor(Color.WHITE);
         mValuePaint.setTextAlign(Align.CENTER);
+
+        mBackgroundValuePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBackgroundValuePaint.setColor(Color.BLACK);
+        mBackgroundValuePaint.setTextAlign(Align.CENTER);
+        mBackgroundValuePaint.setTextSize(Utils.convertDpToPixel(13f));
 
         // for the piechart, drawing values is enabled
         mDrawYValues = true;
@@ -431,8 +443,15 @@ public class PieChart extends PieRadarChartBase<PieData> {
 
             PieDataSet dataSet = dataSets.get(i);
             ArrayList<Entry> entries = dataSet.getYVals();
+            ArrayList<Integer> colors = dataSet.getColors();
 
             for (int j = 0; j < entries.size() * mPhaseX; j++) {
+
+                Paint paint = mValuePaint;
+                if ((mBackgroundColor != -1 && colors.get(j) == mBackgroundColor) ||
+                        colors.get(j) == mValuePaint.getColor()) {
+                    paint = mBackgroundValuePaint;
+                }
 
                 // offset needed to center the drawn text in the slice
                 float offset = mDrawAngles[cnt] / 2;
@@ -463,20 +482,21 @@ public class PieChart extends PieRadarChartBase<PieData> {
                     // use ascent and descent to calculate the new line
                     // position,
                     // 1.6f is the line spacing
-                    float lineHeight = (mValuePaint.ascent() + mValuePaint.descent()) * 1.6f;
+                    float lineHeight = (paint.ascent() + paint.descent()) * 1.6f;
                     y -= lineHeight / 2;
 
-                    mDrawCanvas.drawText(val, x, y, mValuePaint);
-                    if (j < mCurrentData.getXValCount())
+                    mDrawCanvas.drawText(val, x, y, paint);
+                    if (j < mCurrentData.getXValCount()) {
                         mDrawCanvas.drawText(mCurrentData.getXVals().get(j), x, y + lineHeight,
-                                mValuePaint);
+                                paint);
+                    }
 
                 } else if (mDrawXVals && !mDrawYValues) {
                     if (j < mCurrentData.getXValCount())
-                        mDrawCanvas.drawText(mCurrentData.getXVals().get(j), x, y, mValuePaint);
+                        mDrawCanvas.drawText(mCurrentData.getXVals().get(j), x, y, paint);
                 } else if (!mDrawXVals && mDrawYValues) {
 
-                    mDrawCanvas.drawText(val, x, y, mValuePaint);
+                    mDrawCanvas.drawText(val, x, y, paint);
                 }
 
                 cnt++;
@@ -781,5 +801,31 @@ public class PieChart extends PieRadarChartBase<PieData> {
         }
 
         return null;
+    }
+
+    @Override
+    public void setValueTypeface(Typeface t) {
+        super.setValueTypeface(t);
+        mBackgroundValuePaint.setTypeface(t);
+    }
+
+    @Override
+    public void setValueTextSize(float size) {
+        super.setValueTextSize(size);
+        mBackgroundValuePaint.setTextSize(Utils.convertDpToPixel(size));
+    }
+
+    /**
+     * sets the draw color for the value paint object
+     * when the value background is the same as app background.
+     *
+     * Use this method when the background is light and text color is lite too.
+     *
+     * @param backgroundColor background color
+     * @param textColor text color
+     */
+    public void setBackgroundValueTextColor(int backgroundColor, int textColor) {
+        mBackgroundColor = backgroundColor;
+        mBackgroundValuePaint.setColor(textColor);
     }
 }
