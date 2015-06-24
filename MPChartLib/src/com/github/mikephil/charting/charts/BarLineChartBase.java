@@ -115,6 +115,9 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
      */
     protected boolean mHighLightIndicatorEnabled = true;
 
+    /** flag indicating if the values should be drawn or not */
+    protected boolean mDrawValues = true;
+
     /** flag indicating if the vertical grid should be drawn or not */
     protected boolean mDrawVerticalGrid = true;
 
@@ -239,13 +242,15 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
 
         drawYLabels(canvas);
 
-        drawValues(canvas);
+        if (isDrawValuesEnabled())
+            drawValues(canvas);
 
         drawLegend(canvas);
 
         drawBorder(canvas);
 
-        drawMarkers(canvas);
+        if (false)
+            drawMarkers(canvas);
 
         drawDescription(canvas);
 
@@ -642,6 +647,15 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
         } else {
             mYLabels.mDecimals = 0;
         }
+    }
+
+    /**
+     * Set the text color for x and y labels.
+     * @param color
+     */
+    public void setLabelsColor(int color) {
+        mXLabels.setTextColor(color);
+        mYLabels.setTextColor(color);
     }
 
     /**
@@ -1586,11 +1600,21 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
 
     /**
      * if set to true, the vertical grid will be drawn, default: true
-     * 
+     *
      * @param enabled
      */
     public void setDrawVerticalGrid(boolean enabled) {
         mDrawVerticalGrid = enabled;
+    }
+
+
+    /**
+     * if set to true, the values will be drawn, default: true
+     *
+     * @param enabled
+     */
+    public void setDrawValues(boolean enabled) {
+        mDrawValues = enabled;
     }
 
     /**
@@ -1604,11 +1628,20 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
 
     /**
      * returns true if drawing the vertical grid is enabled, false if not
-     * 
+     *
      * @return
      */
     public boolean isDrawVerticalGridEnabled() {
         return mDrawVerticalGrid;
+    }
+
+    /**
+     * returns true if drawing the values is enabled, false if not
+     *
+     * @return
+     */
+    public boolean isDrawValuesEnabled() {
+        return mDrawValues;
     }
 
     /**
@@ -1914,7 +1947,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
      * @return
      */
     public float getMaxScaleX() {
-        return mDeltaX / 2f;
+        return mDeltaX / 10f;
     }
 
     /**
