@@ -66,6 +66,9 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
     /** holds the maximum scale factor of the y-axis, default 12f */
     protected float mMaxScaleY = 12f;
 
+    /** holds the maximum scale factor of the x-axis*/
+    protected float mMaxScaleX = -1f;
+
     /** the width of the grid lines */
     protected float mGridWidth = 1f;
 
@@ -185,6 +188,8 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
         // mGridBackgroundPaint.setColor(Color.WHITE);
         mGridBackgroundPaint.setColor(Color.rgb(240, 240, 240)); // light
         // grey
+
+        mMaxScaleX = mDeltaX / 10f;
     }
 
     @Override
@@ -1941,13 +1946,27 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
     }
 
     /**
+     * sets the maximum scale factor for the y-axis. Default 12f, min 1f, max
+     * unlimited
+     *
+     * @param factor
+     */
+    public void setMaxScaleX(float factor) {
+
+        if (factor < 1f)
+            factor = 1f;
+
+        mMaxScaleX = factor;
+    }
+
+    /**
      * calcualtes the maximum x-scale value depending on the number of x-values,
-     * maximum scale is numberOfXvals / 2
+     * maximum scale is numberOfXvals / 10 by default
      * 
      * @return
      */
     public float getMaxScaleX() {
-        return mDeltaX / 10f;
+        return mMaxScaleX == -1f ? mDeltaX / 10f : mMaxScaleX;
     }
 
     /**

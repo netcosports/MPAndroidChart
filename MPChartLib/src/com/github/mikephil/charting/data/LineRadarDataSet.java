@@ -63,8 +63,7 @@ public abstract class LineRadarDataSet<T extends Entry> extends BarLineScatterCa
     /**
      * sets the alpha value (transparency) that is used for filling the line
      * surface (0-255), default: 85
-     * 
-     * @param color
+     *
      */
     public void setFillAlpha(int alpha) {
         mFillAlpha = alpha;
