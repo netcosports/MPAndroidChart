@@ -245,12 +245,12 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
         if (isDrawValuesEnabled())
             drawValues(canvas);
 
-        drawLegend(canvas);
+        if (isDrawLegendEnabled())
+            drawLegend(canvas);
 
         drawBorder(canvas);
 
-        if (false)
-            drawMarkers(canvas);
+        drawMarkers(canvas);
 
         drawDescription(canvas);
 
