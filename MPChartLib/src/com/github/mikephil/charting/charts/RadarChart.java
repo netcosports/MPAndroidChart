@@ -2,7 +2,6 @@
 package com.github.mikephil.charting.charts;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,6 +9,8 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.Display;
+import android.view.WindowManager;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.RadarData;
@@ -83,6 +84,7 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
      * the object representing the x-axis labels
      */
     private XLabels mXLabels = new XLabels();
+    private int mScreenWidth;
 
     public RadarChart(Context context) {
         super(context);
@@ -110,6 +112,10 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
         mHighlightPaint.setStyle(Paint.Style.STROKE);
         mHighlightPaint.setStrokeWidth(2f);
         mHighlightPaint.setColor(Color.rgb(255, 187, 115));
+
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        mScreenWidth = display.getWidth();
     }
 
     @Override
@@ -444,6 +450,12 @@ public class RadarChart extends PieRadarChartBase<RadarData> {
             int yoffset = 0;
             String[] lines = text.split("\n");
             for (String subString : lines) {
+                mXLabelPaint.getTextBounds(subString, 0, subString.length(), bounds);
+                if (p.x - bounds.width() / 2 < 0) {
+                    p.x = bounds.width() / 2 + 5;
+                } else if (p.x + bounds.width() / 2 > mScreenWidth) {
+                    p.x = mScreenWidth - bounds.width() / 2 - 5;
+                }
                 mDrawCanvas.drawText(subString, p.x, p.y + yoffset, mXLabelPaint);
                 yoffset = yoffset + lineHeight;
             }
