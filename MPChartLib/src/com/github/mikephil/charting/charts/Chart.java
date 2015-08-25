@@ -2371,8 +2371,10 @@ public abstract class Chart<T extends ChartData<? extends DataSet<? extends Entr
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 
         // create a new bitmap with the new dimensions
-        mDrawBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_4444);
-        mDrawCanvas = new Canvas(mDrawBitmap);
+        if (w > 0 && h > 0) {
+            mDrawBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_4444);
+            mDrawCanvas = new Canvas(mDrawBitmap);
+        }
 
         // prepare content rect and matrices
         prepareContentRect();
