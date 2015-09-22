@@ -2,6 +2,7 @@
 package com.github.mikephil.charting.charts;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -22,21 +23,29 @@ import java.util.ArrayList;
 
 /**
  * Chart that draws bars.
- * 
+ *
  * @author Philipp Jahoda
  */
 public class BarChart extends BarLineChartBase<BarData> {
 
-    /** indicates the angle of the 3d effect */
+    /**
+     * indicates the angle of the 3d effect
+     */
     private float mSkew = 0.3f;
 
-    /** indicates how much the 3d effect goes back */
+    /**
+     * indicates how much the 3d effect goes back
+     */
     private float mDepth = 0.3f;
 
-    /** flag the enables or disables 3d bars */
+    /**
+     * flag the enables or disables 3d bars
+     */
     private boolean m3DEnabled = false;
 
-    /** flag that enables or disables the highlighting arrow */
+    /**
+     * flag that enables or disables the highlighting arrow
+     */
     private boolean mDrawHighlightArrow = false;
 
     /**
@@ -57,10 +66,14 @@ public class BarChart extends BarLineChartBase<BarData> {
      */
     private boolean mDrawBarShadow = true;
 
-    /** the rect object that is used for drawing the bar shadow */
+    /**
+     * the rect object that is used for drawing the bar shadow
+     */
     private RectF mBarShadow = new RectF();
 
-    /** the rect object that is used for drawing the bars */
+    /**
+     * the rect object that is used for drawing the bars
+     */
     private RectF mBarRect = new RectF();
 
     public BarChart(Context context) {
@@ -113,7 +126,7 @@ public class BarChart extends BarLineChartBase<BarData> {
     }
 
     @Override
-    protected void drawHighlights() {
+    protected void drawHighlights(Canvas canvas) {
 
         int setCount = mOriginalData.getDataSetCount();
 
@@ -124,7 +137,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
             int dataSetIndex = h.getDataSetIndex();
             BarDataSet set = (BarDataSet) mCurrentData.getDataSetByIndex(dataSetIndex);
-            
+
             if (set == null)
                 continue;
 
@@ -147,7 +160,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
                 prepareBar(x, y, set.getBarSpace());
 
-                mDrawCanvas.drawRect(mBarRect, mHighlightPaint);
+                canvas.drawRect(mBarRect, mHighlightPaint);
 
                 if (mDrawHighlightArrow) {
 
@@ -162,14 +175,14 @@ public class BarChart extends BarLineChartBase<BarData> {
                     arrow.lineTo(x + 0.8f, y + offsetY);
 
                     transformPath(arrow);
-                    mDrawCanvas.drawPath(arrow, mHighlightPaint);
+                    canvas.drawPath(arrow, mHighlightPaint);
                 }
             }
         }
     }
 
     @Override
-    protected void drawData() {
+    protected void drawData(Canvas canvas) {
 
         ArrayList<BarDataSet> dataSets = mOriginalData.getDataSets();
         int setCount = mOriginalData.getDataSetCount();
@@ -210,14 +223,14 @@ public class BarChart extends BarLineChartBase<BarData> {
                     // if drawing the bar shadow is enabled
                     if (mDrawBarShadow) {
                         mRenderPaint.setColor(dataSet.getBarShadowColor());
-                        mDrawCanvas.drawRect(mBarShadow, mRenderPaint);
+                        canvas.drawRect(mBarShadow, mRenderPaint);
                     }
 
                     // Set the color for the currently drawn value. If the index
                     // is
                     // out of bounds, reuse colors.
                     mRenderPaint.setColor(dataSet.getColor(j));
-                    mDrawCanvas.drawRect(mBarRect, mRenderPaint);
+                    canvas.drawRect(mBarRect, mRenderPaint);
 
                 } else { // stacked bars
 
@@ -233,11 +246,11 @@ public class BarChart extends BarLineChartBase<BarData> {
                         // if drawing the bar shadow is enabled
                         if (mDrawBarShadow) {
                             mRenderPaint.setColor(dataSet.getBarShadowColor());
-                            mDrawCanvas.drawRect(mBarShadow, mRenderPaint);
+                            canvas.drawRect(mBarShadow, mRenderPaint);
                         }
 
                         mRenderPaint.setColor(dataSet.getColor(0));
-                        mDrawCanvas.drawRect(mBarRect, mRenderPaint);
+                        canvas.drawRect(mBarRect, mRenderPaint);
 
                     } else {
 
@@ -248,7 +261,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
                             prepareBar(x, y, dataSet.getBarSpace());
                             mRenderPaint.setColor(dataSet.getBarShadowColor());
-                            mDrawCanvas.drawRect(mBarShadow, mRenderPaint);
+                            canvas.drawRect(mBarShadow, mRenderPaint);
                         }
 
                         // draw the stack
@@ -259,7 +272,7 @@ public class BarChart extends BarLineChartBase<BarData> {
                             prepareBar(x, vals[k] + all, dataSet.getBarSpace());
 
                             mRenderPaint.setColor(dataSet.getColor(k));
-                            mDrawCanvas.drawRect(mBarRect, mRenderPaint);
+                            canvas.drawRect(mBarRect, mRenderPaint);
                         }
                     }
 
@@ -274,9 +287,9 @@ public class BarChart extends BarLineChartBase<BarData> {
     /**
      * Prepares a bar for drawing on the specified x-index and y-position. Also
      * prepares the shadow-bar if enabled.
-     * 
-     * @param x the x-position
-     * @param y the y-position
+     *
+     * @param x        the x-position
+     * @param y        the y-position
      * @param barspace the space between bars
      */
     private void prepareBar(float x, float y, float barspace) {
@@ -298,10 +311,10 @@ public class BarChart extends BarLineChartBase<BarData> {
     }
 
     @Override
-    protected void drawXLabels(float yPos) {
+    protected void drawXLabels(Canvas canvas, float yPos) {
 
         // pre allocate to save performance (dont allocate in loop)
-        float[] position = new float[] {
+        float[] position = new float[]{
                 0f, 0f
         };
 
@@ -339,7 +352,7 @@ public class BarChart extends BarLineChartBase<BarData> {
                     }
                 }
 
-                mDrawCanvas.drawText(label, position[0],
+                canvas.drawText(label, position[0],
                         yPos,
                         mXLabelPaint);
             }
@@ -347,12 +360,12 @@ public class BarChart extends BarLineChartBase<BarData> {
     }
 
     @Override
-    protected void drawVerticalGrid() {
+    protected void drawVerticalGrid(Canvas canvas) {
 
         if (!mDrawVerticalGrid || mCurrentData == null)
             return;
 
-        float[] position = new float[] {
+        float[] position = new float[]{
                 0f, 0f
         };
 
@@ -367,21 +380,22 @@ public class BarChart extends BarLineChartBase<BarData> {
 
             if (position[0] >= mOffsetLeft && position[0] <= getWidth()) {
 
-                mDrawCanvas.drawLine(position[0], mOffsetTop, position[0], getHeight()
+                canvas.drawLine(position[0], mOffsetTop, position[0], getHeight()
                         - mOffsetBottom, mGridPaint);
             }
         }
     }
-    
+
     @Override
-    protected void drawValues() {
+    protected void drawValues(Canvas canvas) {
 
         // if values are drawn
         if (mDrawYValues && mCurrentData.getYValCount() < mMaxVisibleCount * mScaleX) {
 
             ArrayList<BarDataSet> dataSets = ((BarData) mCurrentData).getDataSets();
 
-            float posOffset = 0f; float negOffset = 0f;
+            float posOffset = 0f;
+            float negOffset = 0f;
 
             // calculate the correct offset depending on the draw position of
             // the value
@@ -414,7 +428,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
                         float val = entries.get(j / 2).getVal();
 
-                        drawValue(val, valuePoints[j],
+                        drawValue(canvas, val, valuePoints[j],
                                 valuePoints[j + 1] + (val >= 0 ? posOffset : negOffset));
                     }
 
@@ -439,7 +453,7 @@ public class BarChart extends BarLineChartBase<BarData> {
                         // in between
                         if (vals == null) {
 
-                            drawValue(e.getVal(), valuePoints[j],
+                            drawValue(canvas, e.getVal(), valuePoints[j],
                                     valuePoints[j + 1] + (e.getVal() >= 0 ? posOffset : negOffset));
 
                         } else {
@@ -459,7 +473,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
                             for (int k = 0; k < transformed.length; k += 2) {
 
-                                drawValue(vals[k / 2], valuePoints[j],
+                                drawValue(canvas, vals[k / 2], valuePoints[j],
                                         transformed[k + 1] + (vals[k / 2] >= 0 ? posOffset : negOffset));
                             }
                         }
@@ -471,22 +485,22 @@ public class BarChart extends BarLineChartBase<BarData> {
 
     /**
      * Draws a value at the specified x and y position.
-     * 
-     * @param value
+     *
+     * @param val
      * @param xPos
      * @param yPos
      */
-    private void drawValue(float val, float xPos, float yPos) {
-        
-        String value = mValueFormatter.getFormattedValue(val);     
+    private void drawValue(Canvas canvas, float val, float xPos, float yPos) {
+
+        String value = mValueFormatter.getFormattedValue(val);
 
         if (mDrawUnitInChart) {
 
-            mDrawCanvas.drawText(value + mUnit, xPos, yPos,
+            canvas.drawText(value + mUnit, xPos, yPos,
                     mValuePaint);
         } else {
 
-            mDrawCanvas.drawText(value, xPos, yPos,
+            canvas.drawText(value, xPos, yPos,
                     mValuePaint);
         }
     }
@@ -494,7 +508,7 @@ public class BarChart extends BarLineChartBase<BarData> {
     /**
      * Returns the Highlight object (contains x-index and DataSet index) of the
      * selected value at the given touch point inside the BarChart.
-     * 
+     *
      * @param x
      * @param y
      * @return
@@ -557,9 +571,8 @@ public class BarChart extends BarLineChartBase<BarData> {
     /**
      * Returns the bounding box of the specified Entry in the specified DataSet.
      * Returns null if the Entry could not be found in the charts data.
-     * 
+     *
      * @param e
-     * @param dataSetIndex
      * @return
      */
     public RectF getBarBounds(BarEntry e) {
@@ -589,7 +602,7 @@ public class BarChart extends BarLineChartBase<BarData> {
     /**
      * sets the skew (default 0.3f), the skew indicates how much the 3D effect
      * of the chart is turned to the right
-     * 
+     *
      * @param skew
      */
     public void setSkew(float skew) {
@@ -599,7 +612,7 @@ public class BarChart extends BarLineChartBase<BarData> {
     /**
      * returns the skew value that indicates how much the 3D effect is turned to
      * the right
-     * 
+     *
      * @return
      */
     public float getSkew() {
@@ -609,7 +622,7 @@ public class BarChart extends BarLineChartBase<BarData> {
     /**
      * set the depth of the chart (default 0.3f), the depth indicates how much
      * the 3D effect of the chart goes back
-     * 
+     *
      * @param depth
      */
     public void setDepth(float depth) {
@@ -618,7 +631,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
     /**
      * returhs the depth, which indicates how much the 3D effect goes back
-     * 
+     *
      * @return
      */
     public float getDepth() {
@@ -627,7 +640,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
     /**
      * if enabled, chart will be drawn in 3d
-     * 
+     *
      * @param enabled
      */
     public void set3DEnabled(boolean enabled) {
@@ -636,7 +649,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
     /**
      * returns true if 3d bars is enabled, false if not
-     * 
+     *
      * @return
      */
     public boolean is3DEnabled() {
@@ -645,7 +658,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
     /**
      * set this to true to draw the highlightning arrow
-     * 
+     *
      * @param enabled
      */
     public void setDrawHighlightArrow(boolean enabled) {
@@ -654,7 +667,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
     /**
      * returns true if drawing the highlighting arrow is enabled, false if not
-     * 
+     *
      * @return
      */
     public boolean isDrawHighlightArrowEnabled() {
@@ -664,7 +677,7 @@ public class BarChart extends BarLineChartBase<BarData> {
     /**
      * If set to true, all values are drawn above their bars, instead of below
      * their top.
-     * 
+     *
      * @param enabled
      */
     public void setDrawValueAboveBar(boolean enabled) {
@@ -673,7 +686,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
     /**
      * returns true if drawing values above bars is enabled, false if not
-     * 
+     *
      * @return
      */
     public boolean isDrawValueAboveBarEnabled() {
@@ -683,7 +696,7 @@ public class BarChart extends BarLineChartBase<BarData> {
     /**
      * if set to true, all values of a stack are drawn individually, and not
      * just their sum
-     * 
+     *
      * @param enabled
      */
     public void setDrawValuesForWholeStack(boolean enabled) {
@@ -692,7 +705,7 @@ public class BarChart extends BarLineChartBase<BarData> {
 
     /**
      * returns true if all values of a stack are drawn, and not just their sum
-     * 
+     *
      * @return
      */
     public boolean isDrawValuesForWholeStackEnabled() {
@@ -702,7 +715,7 @@ public class BarChart extends BarLineChartBase<BarData> {
     /**
      * If set to true, a grey area is drawn behind each bar that indicates the
      * maximum value. Enabling his will reduce performance by about 50%.
-     * 
+     *
      * @param enabled
      */
     public void setDrawBarShadow(boolean enabled) {
@@ -712,7 +725,7 @@ public class BarChart extends BarLineChartBase<BarData> {
     /**
      * returns true if drawing shadows (maxvalue) for each bar is enabled, false
      * if not
-     * 
+     *
      * @return
      */
     public boolean isDrawBarShadowEnabled() {
@@ -720,6 +733,6 @@ public class BarChart extends BarLineChartBase<BarData> {
     }
 
     @Override
-    protected void drawAdditional() {
+    protected void drawAdditional(Canvas canvas) {
     }
 }

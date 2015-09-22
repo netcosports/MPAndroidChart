@@ -2,6 +2,7 @@
 package com.github.mikephil.charting.charts;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -72,7 +73,7 @@ public class LineChart extends BarLineChartBase<LineData> {
     }
 
     @Override
-    protected void drawHighlights() {
+    protected void drawHighlights(Canvas canvas) {
 
         for (int i = 0; i < mIndicesToHightlight.length; i++) {
 
@@ -99,7 +100,7 @@ public class LineChart extends BarLineChartBase<LineData> {
 
             transformPointArray(pts);
             // draw the highlight lines
-            mDrawCanvas.drawLines(pts, mHighlightPaint);
+            canvas.drawLines(pts, mHighlightPaint);
         }
     }
 
@@ -129,7 +130,7 @@ public class LineChart extends BarLineChartBase<LineData> {
      * draws the given y values to the screen
      */
     @Override
-    protected void drawData() {
+    protected void drawData(Canvas canvas) {
 
         ArrayList<LineDataSet> dataSets = mCurrentData.getDataSets();
 
@@ -212,7 +213,7 @@ public class LineChart extends BarLineChartBase<LineData> {
 
                 transformPath(spline);
 
-                mDrawCanvas.drawPath(spline, mRenderPaint);
+                canvas.drawPath(spline, mRenderPaint);
 
                 // draw normal (straight) lines
             } else {
@@ -239,7 +240,7 @@ public class LineChart extends BarLineChartBase<LineData> {
                         // get the color that is set for this line-segment
                         mRenderPaint.setColor(dataSet.getColor(j / 2));
 
-                        mDrawCanvas.drawLine(valuePoints[j], valuePoints[j + 1],
+                        canvas.drawLine(valuePoints[j], valuePoints[j + 1],
                                 valuePoints[j + 2], valuePoints[j + 3], mRenderPaint);
                     }
 
@@ -250,14 +251,14 @@ public class LineChart extends BarLineChartBase<LineData> {
                     Path line = generateLinePath(entries);
                     transformPath(line);
 
-                    mDrawCanvas.drawPath(line, mRenderPaint);
+                    canvas.drawPath(line, mRenderPaint);
                 }
 
                 mRenderPaint.setPathEffect(null);
 
                 // if drawing filled is enabled
                 if (dataSet.isDrawFilledEnabled() && entries.size() > 0) {
-                    // mDrawCanvas.drawVertices(VertexMode.TRIANGLE_STRIP,
+                    // canvas.drawVertices(VertexMode.TRIANGLE_STRIP,
                     // valuePoints.length, valuePoints, 0,
                     // null, 0, null, 0, null, 0, 0, paint);
 
@@ -275,7 +276,7 @@ public class LineChart extends BarLineChartBase<LineData> {
 
                     transformPath(filled);
 
-                    mDrawCanvas.drawPath(filled, mRenderPaint);
+                    canvas.drawPath(filled, mRenderPaint);
 
                     // restore alpha
                     mRenderPaint.setAlpha(255);
@@ -335,7 +336,7 @@ public class LineChart extends BarLineChartBase<LineData> {
     }
 
     @Override
-    protected void drawValues() {
+    protected void drawValues(Canvas canvas) {
 
         // if values are drawn
         if (mDrawYValues && mCurrentData.getYValCount() < mMaxVisibleCount * mScaleX) {
@@ -369,13 +370,13 @@ public class LineChart extends BarLineChartBase<LineData> {
 
                     if (mDrawUnitInChart) {
 
-                        mDrawCanvas.drawText(mValueFormatter.getFormattedValue(val) + mUnit,
+                        canvas.drawText(mValueFormatter.getFormattedValue(val) + mUnit,
                                 positions[j],
                                 positions[j + 1]
                                         - valOffset, mValuePaint);
                     } else {
 
-                        mDrawCanvas.drawText(mValueFormatter.getFormattedValue(val), positions[j],
+                        canvas.drawText(mValueFormatter.getFormattedValue(val), positions[j],
                                 positions[j + 1] - valOffset,
                                 mValuePaint);
                     }
@@ -388,7 +389,7 @@ public class LineChart extends BarLineChartBase<LineData> {
      * draws the circle value indicators
      */
     @Override
-    protected void drawAdditional() {
+    protected void drawAdditional(Canvas canvas) {
 
         mRenderPaint.setStyle(Paint.Style.FILL);
 
@@ -422,9 +423,9 @@ public class LineChart extends BarLineChartBase<LineData> {
                             || isOffContentBottom(positions[j + 1]))
                         continue;
 
-                    mDrawCanvas.drawCircle(positions[j], positions[j + 1], dataSet.getCircleSize(),
+                    canvas.drawCircle(positions[j], positions[j + 1], dataSet.getCircleSize(),
                             mRenderPaint);
-                    mDrawCanvas.drawCircle(positions[j], positions[j + 1],
+                    canvas.drawCircle(positions[j], positions[j + 1],
                             dataSet.getCircleSize() / 2f,
                             mCirclePaintInner);
                 }
